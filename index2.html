@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Complaint Management System</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background-color: #f9f9f9;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    input, textarea {
+      width: 100%;
+      margin: 10px 0;
+      padding: 10px;
+      box-sizing: border-box;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      resize: vertical;
+      font-size: 16px;
+    }
+    button {
+      background-color: #007BFF;
+      border: none;
+      color: white;
+      padding: 10px 20px;
+      cursor: pointer;
+      border-radius: 4px;
+      font-size: 16px;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    .complaint {
+      border: 1px solid #ddd;
+      padding: 15px;
+      margin-bottom: 15px;
+      border-radius: 6px;
+      background-color: #fff;
+    }
+    .status {
+      font-weight: bold;
+      margin-top: 10px;
+    }
+    .resolved {
+      color: green;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Complaint Management System</h1>
+  <div class="container">
+    <h3>Register Complaint</h3>
+    <input type="text" id="name" placeholder="Enter your name" />
+    <textarea id="complaint" rows="3" placeholder="Enter your complaint"></textarea>
+    <button id="submitBtn">Submit Complaint</button>
+
+    <h3>All Complaints</h3>
+    <div id="complaintsList">
+      <p>No complaints yet.</p>
+    </div>
+  </div>
+
+  <script>
+    const complaints = [];
+    let complaintId = 1;
+
+    const nameInput = document.getElementById('name');
+    const complaintInput = document.getElementById('complaint');
+    const submitBtn = document.getElementById('submitBtn');
+    const complaintsList = document.getElementById('complaintsList');
+
+    function displayComplaints() {
+      console.log("Displaying complaints:", complaints); // Debug log
+      if (complaints.length === 0) {
+        complaintsList.innerHTML = "<p>No complaints yet.</p>";
+        return;
+      }
+
+      complaintsList.innerHTML = ""; // clear list
+
+      complaints.forEach(c => {
+        const div = document.createElement('div');
+        div.className = 'complaint';
+
+        div.innerHTML = `
+          <p><strong>ID:</strong> ${c.id}</p>
+          <p><strong>Name:</strong> ${c.name}</p>
+          <p><strong>Complaint:</strong> ${c.text}</p>
+          <p class="status ${c.status === 'Resolved' ? 'resolved' : ''}">
+            Status: ${c.status}
+          </p>
+        `;
+
+        if (c.status === "Pending") {
+          const resolveBtn = document.createElement('button');
+          resolveBtn.textContent = 'Resolve';
+          resolveBtn.style.marginTop = '10px';
+          resolveBtn.addEventListener('click', () => {
+            resolveComplaint(c.id);
+          });
+          div.appendChild(resolveBtn);
+        }
+
+        complaintsList.appendChild(div);
+      });
+    }
+
+    function addComplaint() {
+      const name = nameInput.value.trim();
+      const complaintText = complaintInput.value.trim();
+
+      if (name === "" || complaintText === "") {
+        alert("Please enter all details!");
+        return;
+      }
+
+      complaints.push({
+        id: complaintId++,
+        name: name,
+        text: complaintText,
+        status: "Pending"
+      });
+
+      // Clear inputs
+      nameInput.value = "";
+      complaintInput.value = "";
+
+      console.log("Complaint added:", complaints[complaints.length - 1]); // Debug log
+      displayComplaints();
+    }
+
+    function resolveComplaint(id) {
+      const complaint = complaints.find(c => c.id === id);
+      if (complaint) {
+        complaint.status = "Resolved";
+        console.log("Complaint resolved:", complaint); // Debug log
+        displayComplaints();
+      }
+    }
+
+    // Event listener for submit button
+    submitBtn.addEventListener('click', addComplaint);
+
+    // Initial display
+    displayComplaints();
+  </script>
+
+</body>
+</html>
